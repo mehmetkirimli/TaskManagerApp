@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen( options => 
 {
-    options.SwaggerDoc("VERSIYON 1.0.0", new OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Task Manager API",
         Version = "1.0.0",
