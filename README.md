@@ -35,5 +35,3 @@ Son Karar: Identity Kullanmalı mıyız?
 ✅ Eğer kullanıcı girişi, kimlik doğrulama ve yetkilendirme işlemleriyle uğraşmadan hazır bir sistem kullanmak istiyorsan Identity mantıklı.
 
 ❌ Eğer kimlik doğrulamayı kendin yönetmek istiyorsan ve kullanıcı yönetimini çok basit tutmayı planlıyorsan Identity kullanmaya gerek kalmayabilir.
-
-Ne dersin, Identity ile mi ilerleyelim, yoksa manuel bir Users tablosu yapalım mı?
