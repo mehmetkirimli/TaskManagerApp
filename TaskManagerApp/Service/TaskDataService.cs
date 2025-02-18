@@ -67,7 +67,7 @@ namespace TaskManagerApp.Service
             {
                 throw new UnauthorizedAccessException("Bu görevi güncellemek için yetkiniz yok.");
             }
-
+            task.UpdatedDate = DateTime.Now;
             _mapper.Map(taskDto, task);
             await _taskRepo.UpdateAsync(task);
         }
