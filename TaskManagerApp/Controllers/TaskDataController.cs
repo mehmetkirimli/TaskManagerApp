@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagerApp.DTO;
 using TaskManagerApp.Service;
 using TaskManagerApp.Service.Impl;
+using TaskManagerApp.Utils;
 
 namespace TaskManagerApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]  // JWT ile authorize olacak.
+    [AuthorizeUser] // ActionFilterAttribute ile authorize olacak.
     public class TaskController : ControllerBase
     {
         private readonly ITaskDataService _taskService;
@@ -22,7 +25,9 @@ namespace TaskManagerApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTasks()
         {
-            var tasks = await _taskService.GetAllTasksAsync();
+            var userId = User.Identity?.Name;
+            if (userId == null) return Unauthorized();
+            var tasks = await _taskService.GetAllTasksAsync(userId);
             return Ok(tasks);
         }
 
@@ -30,7 +35,8 @@ namespace TaskManagerApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTaskById(int id)
         {
-            var task = await _taskService.GetTaskByIdAsync(id);
+            var userId = User.Identity?.Name;
+            var task = await _taskService.GetTaskByIdAsync(id, userId);
             if (task == null) return NotFound();
             return Ok(task);
         }
@@ -39,7 +45,8 @@ namespace TaskManagerApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTask(TaskDataDto taskDto)
         {
-            await _taskService.AddTaskAsync(taskDto);
+            var userId = User.Identity?.Name;
+            await _taskService.AddTaskAsync(taskDto,userId);
             return CreatedAtAction(nameof(GetTaskById), new { id = taskDto.Id }, taskDto);
         }
 
@@ -47,7 +54,8 @@ namespace TaskManagerApp.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, TaskDataDto taskDto)
         {
-            await _taskService.UpdateTaskAsync(id, taskDto);
+            var userId = User.Identity?.Name;
+            await _taskService.UpdateTaskAsync(id, taskDto,userId);
             return NoContent();
         }
 
@@ -55,7 +63,8 @@ namespace TaskManagerApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
-            await _taskService.DeleteTaskAsync(id);
+            var userId = User.Identity?.Name;
+            await _taskService.DeleteTaskAsync(id,userId);
             return NoContent();
         }
     }

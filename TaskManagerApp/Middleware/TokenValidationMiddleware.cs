@@ -11,17 +11,17 @@ namespace TaskManagerApp.Middleware
         private readonly RequestDelegate _next;
         private readonly string _secretKey;
 
-        public TokenValidationMiddleware(RequestDelegate next, string secretKey)
+        public TokenValidationMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
-            _secretKey = secretKey;
+            _secretKey = configuration["Jwt:Key"] ?? throw new ArgumentNullException(nameof(configuration), "Jwt:Key configuration is missing");
         }
 
-        public async Task InvokeAsync(HttpContext context) 
+        public async Task InvokeAsync(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
-            if (token != null) 
+            if (token != null)
             {
                 var principal = ValidateToken(token);
                 if (principal != null)

@@ -13,6 +13,7 @@ using TaskManagerApp.Repository;
 using TaskManagerApp.Service.Impl;
 using TaskManagerApp.Service;
 using TaskManagerApp.Middleware;
+using TaskManagerApp.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Generic repo
 builder.Services.AddScoped<ITaskDataService, TaskDataService>(); // Task service
 builder.Services.AddScoped<IAuthService, AuthService>(); // Auth service
+builder.Services.AddScoped<AuthorizeUserAttribute>();
+
+// Middleware İçin :Key :Isuuers ve diğer ayarlar appsettings.json dosyasından alınacak
+builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured."));
+builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is not configured."));
 
 
 builder.Services.AddControllers();
