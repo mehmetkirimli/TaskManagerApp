@@ -35,3 +35,8 @@ Son Karar: Identity Kullanmalı mıyız?
 ✅ Eğer kullanıcı girişi, kimlik doğrulama ve yetkilendirme işlemleriyle uğraşmadan hazır bir sistem kullanmak istiyorsan Identity mantıklı.
 
 ❌ Eğer kimlik doğrulamayı kendin yönetmek istiyorsan ve kullanıcı yönetimini çok basit tutmayı planlıyorsan Identity kullanmaya gerek kalmayabilir.
+
+Controller: Token doğrulama işlemi controller içinde yapılmaz. Token yalnızca header'dan alınır.
+AuthService: Kullanıcıyı doğrulama ve JWT token oluşturma işlemleri burada yapılır.
+TaskService: Token doğrulama ve kullanıcının kendisine ait verileri filtreleme işlemleri burada yapılır.
+Bu yapı sayesinde token doğrulama ve kullanıcı bilgisi çıkarımı işlemleri tamamen servislerde yapılacak, controller yalnızca gerekli parametreleri alıp uygun servislere yönlendirecek.
