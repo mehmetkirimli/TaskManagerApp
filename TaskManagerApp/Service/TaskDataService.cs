@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using TaskManagerApp.DTO;
 using TaskManagerApp.Entity;
 using TaskManagerApp.Repository.Impl;
@@ -8,13 +9,15 @@ namespace TaskManagerApp.Service
 {
     public class TaskDataService : ITaskDataService
     {
-        private readonly IRepository<TaskData> _taskRepo;
+        private readonly IRepository<TaskData> _taskRepo ;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TaskDataService(IRepository<TaskData> taskRepo, IMapper mapper)
+        public TaskDataService(IRepository<TaskData> taskRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _taskRepo = taskRepo;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         public async Task<IEnumerable<TaskDataDto>> GetAllTasksAsync(string userId)
@@ -36,9 +39,20 @@ namespace TaskManagerApp.Service
 
         public async Task AddTaskAsync(TaskDataDto taskDto , string userId)
         {
-            var task = _mapper.Map<TaskData>(taskDto);
-            task.UserId = userId; // task oluşturulurken kullanıcı id'si set ediliyor
-            await _taskRepo.AddAsync(task);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var taskData = new TaskData
+            {
+                Title = taskDto.Title,
+                Description = taskDto.Description,
+                UserId = userId // Burada kullanıcı kimliğini doğru şekilde bağlıyoruz
+            };
+
+            await _taskRepo.AddAsync(taskData);
         }
 
         public async Task UpdateTaskAsync(int id, TaskDataDto taskDto , string userId)

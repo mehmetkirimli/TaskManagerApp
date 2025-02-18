@@ -1,7 +1,9 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagerApp.DTO;
+using TaskManagerApp.Entity;
 using TaskManagerApp.Service;
 using TaskManagerApp.Service.Impl;
 using TaskManagerApp.Utils;
@@ -12,20 +14,27 @@ namespace TaskManagerApp.Controllers
     [ApiController]
     [Authorize]  // JWT ile authorize olacak.
     [AuthorizeUser] // ActionFilterAttribute ile authorize olacak.
+
+    /*
+     * Mail'i Name olarak düşünerek , findByMail yoluyla ActionFilterAttribute ile authorize kontrolü yapıp yolluyoruz.
+     */
     public class TaskController : ControllerBase
     {
         private readonly ITaskDataService _taskService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TaskController(ITaskDataService taskService)
+        public TaskController(ITaskDataService taskService , UserManager<ApplicationUser> userManager)
         {
             _taskService = taskService;
+            _userManager = userManager;
         }
 
         // Get All Tasks
         [HttpGet]
         public async Task<IActionResult> GetAllTasks()
         {
-            var userId = User.Identity?.Name;
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
             if (userId == null) return Unauthorized();
             var tasks = await _taskService.GetAllTasksAsync(userId);
             return Ok(tasks);
@@ -35,7 +44,9 @@ namespace TaskManagerApp.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTaskById(int id)
         {
-            var userId = User.Identity?.Name;
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null) return Unauthorized();
             var task = await _taskService.GetTaskByIdAsync(id, userId);
             if (task == null) return NotFound();
             return Ok(task);
@@ -45,7 +56,9 @@ namespace TaskManagerApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTask(TaskDataDto taskDto)
         {
-            var userId = User.Identity?.Name;
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null) return Unauthorized();
             await _taskService.AddTaskAsync(taskDto,userId);
             return CreatedAtAction(nameof(GetTaskById), new { id = taskDto.Id }, taskDto);
         }
@@ -54,7 +67,10 @@ namespace TaskManagerApp.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, TaskDataDto taskDto)
         {
-            var userId = User.Identity?.Name;
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null) return Unauthorized();
+
             await _taskService.UpdateTaskAsync(id, taskDto,userId);
             return NoContent();
         }
@@ -63,7 +79,10 @@ namespace TaskManagerApp.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
-            var userId = User.Identity?.Name;
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null) return Unauthorized();
+
             await _taskService.DeleteTaskAsync(id,userId);
             return NoContent();
         }
