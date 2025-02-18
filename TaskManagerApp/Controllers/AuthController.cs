@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using TaskManagerApp.DTO;
-using TaskManagerApp.Service;
 using TaskManagerApp.Service.Impl;
 
 namespace TaskManagerApp.Controllers
@@ -10,10 +10,12 @@ namespace TaskManagerApp.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IValidator<RegisterDto> _registerValidator;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService , IValidator<RegisterDto> validator)
         {
             _authService = authService;
+            _registerValidator = validator;
         }
 
         [HttpPost("register")]
@@ -21,7 +23,12 @@ namespace TaskManagerApp.Controllers
         {
             try
             {
-               var result = await _authService.RegisterAsync(registerDto);
+                var validationResult = await _registerValidator.ValidateAsync(registerDto);
+                if(!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+                var result = await _authService.RegisterAsync(registerDto);
                 if (result.Succeeded) 
                 { 
                     return Ok(new {message = "Kullanıcı başarıyla oluşturuldu." });

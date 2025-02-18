@@ -14,6 +14,9 @@ using TaskManagerApp.Service.Impl;
 using TaskManagerApp.Service;
 using TaskManagerApp.Middleware;
 using TaskManagerApp.Utils;
+using TaskManagerApp.Validator;
+using FluentValidation;
+using TaskManagerApp.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +30,7 @@ builder.Services.AddScoped<AuthorizeUserAttribute>();
 // Middleware İçin :Key :Isuuers ve diğer ayarlar appsettings.json dosyasından alınacak
 builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured."));
 builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is not configured."));
+
 
 
 builder.Services.AddControllers();
@@ -103,10 +107,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 #endregion
 
-// Validators
-//builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-//builder.Services.AddFluentValidation();
-
 #region Log
 
 Log.Logger = new LoggerConfiguration()
@@ -116,6 +116,11 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();// Uygulamada loglama yapabilmek için
 
+#endregion
+
+#region Fluent Validation
+//builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>(); // bu çalışmadı
+builder.Services.AddScoped<IValidator<RegisterDto>, RegisterValidator>();
 #endregion
 
 var app = builder.Build();
