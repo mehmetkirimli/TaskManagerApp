@@ -8,10 +8,20 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using TaskManagerApp.Data;
 using TaskManagerApp.Entity;
+using TaskManagerApp.Mapper;
+using TaskManagerApp.Repository.Impl;
+using TaskManagerApp.Repository;
+using TaskManagerApp.Service.Impl;
+using TaskManagerApp.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Generic repo
+builder.Services.AddScoped<ITaskDataService, TaskDataService>(); // Task service
+builder.Services.AddScoped<IAuthService, AuthService>(); // Auth service
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -50,6 +60,9 @@ builder.Services.AddSwaggerGen( options =>
     });
 });
 
+#region AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+#endregion
 
 #region JWT
 
