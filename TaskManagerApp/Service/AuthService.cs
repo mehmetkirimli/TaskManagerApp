@@ -66,12 +66,11 @@ namespace TaskManagerApp.Service
             return IdentityResult.Success;
         }
 
-
         // Kullanıcıyı doğrula ve JWT Token üret
         public async Task<string> GenerateJWTToken(ApplicationUser user)
         {
-            // Kullanıcıdan claim'leri alıyoruz.
-            var claims = new[]
+            // Kullanıcının claim'lerini alıyoruz.
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -94,16 +93,49 @@ namespace TaskManagerApp.Service
         }
 
         // Kullanıcıyı giriş yaptırıp token al
-        public async Task<string> AuthenticateAsync(string username, string password)
+        public async Task<String> AuthenticateAsync(string email , string password) 
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
-                throw new UnauthorizedAccessException("Geçersiz kullanıcı adı ya da şifre.");
+                throw new UnauthorizedAccessException("Geçersiz Kullanıcı Adı veya Şifre !!! ");
             }
 
-            // JWT token üret
-            return await GenerateJWTToken(user);
+            var token = await GenerateJWTToken(user);
+
+            return token;
+        }
+
+        public ClaimsPrincipal ValidateToken(string token) 
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+
+            try 
+            { 
+                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidAudience = _configuration["Jwt:Issuer"]
+                }, out var validatedToken);
+
+                return principal;
+            }
+
+            catch (Exception)
+            {
+                return null;
+            }
+
+
+
+
+            return null;
         }
     }
 }

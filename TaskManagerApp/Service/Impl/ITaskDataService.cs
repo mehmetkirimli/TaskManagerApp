@@ -6,10 +6,10 @@ namespace TaskManagerApp.Service.Impl
 {
     public interface ITaskDataService
     {
-        Task<IEnumerable<TaskDataDto>> GetAllTasksAsync();
-        Task<TaskDataDto> GetTaskByIdAsync(int id);
-        Task AddTaskAsync(TaskDataDto taskDto);
-        Task UpdateTaskAsync(int id, TaskDataDto taskDto);
-        Task DeleteTaskAsync(int id);
+        Task<IEnumerable<TaskDataDto>> GetAllTasksAsync(string userId);
+        Task<TaskDataDto> GetTaskByIdAsync(int id, string userId);
+        Task AddTaskAsync(TaskDataDto taskDto , string userId);
+        Task UpdateTaskAsync(int id, TaskDataDto taskDto , string userId);
+        Task DeleteTaskAsync(int id , string userId);
     }
 }

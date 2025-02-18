@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TaskManagerApp.Data;
 using TaskManagerApp.Repository.Impl;
@@ -16,9 +17,17 @@ namespace TaskManagerApp.Repository
             _dbSet = context.Set<T>();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T,bool>> filter = null)
         {
-            return await _dbSet.ToListAsync();
+            if(filter != null) 
+            { 
+                return await _dbSet.Where(filter).ToListAsync();
+            }
+            else 
+            { 
+                return await _dbSet.ToListAsync();
+            }
+            return null;
         }
 
         public async Task<T> GetByIdAsync(int id)

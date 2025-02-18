@@ -21,7 +21,7 @@ namespace TaskManagerApp.Entity
         public bool IsCompleted { get; set;} = false;
 
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } // String olarak tutulacak çünkü IdentityUser'dan gelen Id string olarak tanımlı
 
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }

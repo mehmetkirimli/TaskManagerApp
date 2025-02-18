@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ using TaskManagerApp.Repository.Impl;
 using TaskManagerApp.Repository;
 using TaskManagerApp.Service.Impl;
 using TaskManagerApp.Service;
+using TaskManagerApp.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -113,6 +113,10 @@ builder.Host.UseSerilog();// Uygulamada loglama yapabilmek için
 #endregion
 
 var app = builder.Build();
+
+
+// Middleware sırası önemli
+app.UseMiddleware<TokenValidationMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
