@@ -40,3 +40,20 @@ Controller: Token doğrulama işlemi controller içinde yapılmaz. Token yalnız
 AuthService: Kullanıcıyı doğrulama ve JWT token oluşturma işlemleri burada yapılır.
 TaskService: Token doğrulama ve kullanıcının kendisine ait verileri filtreleme işlemleri burada yapılır.
 Bu yapı sayesinde token doğrulama ve kullanıcı bilgisi çıkarımı işlemleri tamamen servislerde yapılacak, controller yalnızca gerekli parametreleri alıp uygun servislere yönlendirecek.
+
+
+
+
+Mevcut Yöntem vs Fluent Validation
+###############################
+Identity Password Policy (Mevcut Yöntem)	
+Varsayılan olarak güçlü şifre kuralları var. ✔ 
+UserManager ile entegre.	✔ 
+Kontroller şifre oluşturulurken yapılır.❌
+Hatalar doğrudan istemciye dönmez, Identity içinde işlenir.❌
+###################################
+Fluent Validation (Önerilen Yöntem)	
+✔ Hataları daha erken tespit eder.
+✔ Daha okunaklı ve özelleştirilebilir.
+✔ API’ye gelmeden istemci tarafında bile hata yakalanabilir.	
+Eğer Identity’deki politikaları da korumak istersen, çift doğrulama olabilir.❌ 
