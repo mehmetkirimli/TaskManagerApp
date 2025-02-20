@@ -31,6 +31,22 @@ builder.Services.AddScoped<AuthorizeUserAttribute>();
 builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured."));
 builder.Services.AddSingleton(sp => builder.Configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("Jwt:Issuer is not configured."));
 
+#region CORS VE FRONT-END
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // Angular'ın çalıştığı URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+#endregion
+
+
 
 
 builder.Services.AddControllers();
@@ -141,6 +157,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(MyAllowSpecificOrigins); // CORS Middleware ekle
 app.UseAuthentication(); // Kimlik doğrulama middleware etkinleştiriyoruz. #Yeni 
 app.UseAuthorization();
 app.MapControllers();

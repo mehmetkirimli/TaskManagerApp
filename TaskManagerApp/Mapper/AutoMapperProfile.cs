@@ -9,6 +9,7 @@ namespace TaskManagerApp.Mapper
         public AutoMapperProfile()
         {
             CreateMap<TaskData, TaskDataDto>().ReverseMap();
+
             CreateMap<CreateTaskDto, TaskData>();
         }
     }
