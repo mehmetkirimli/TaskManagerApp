@@ -29,6 +29,14 @@ namespace TaskManagerApp.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUser()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user?.Id == null) return Unauthorized();
+            return Ok(user);
+        }
+
         // Get All Tasks
         [HttpGet]
         public async Task<IActionResult> GetAllTasks()
