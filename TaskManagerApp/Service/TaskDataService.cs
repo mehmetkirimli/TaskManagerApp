@@ -95,7 +95,9 @@ namespace TaskManagerApp.Service
         public async Task<List<TaskDataDto>> GetFilteredTasks(TaskFilterDto filterDto)
         {
             // Filtreleme ifadesini hazırlıyoruz
-            Expression<Func<TaskData, bool>> filterExpression = t => true;
+            var userId = filterDto.userId;
+
+            Expression<Func<TaskData, bool>> filterExpression = t =>t.UserId == userId ;
 
             if (!string.IsNullOrEmpty(filterDto.Title))
             {
