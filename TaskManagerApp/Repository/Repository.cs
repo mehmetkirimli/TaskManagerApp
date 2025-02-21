@@ -68,5 +68,10 @@ namespace TaskManagerApp.Repository
             await _context.SaveChangesAsync();
             Log.Information($"Entity with ID {id} deleted successfully.");
         }
+
+        public async Task<IEnumerable<T>> GetFilteredAsync(Expression<Func<T,bool>> filter) 
+        {
+            return await _dbSet.Where(filter).ToListAsync(); //TODO Bu metot ile GetAll metodu birleşitirilebilir aslında. Aynısı nerdeyse
+        }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagerApp.DTO;
+using TaskManagerApp.DTO.Filter;
 using TaskManagerApp.Entity;
 using TaskManagerApp.Service;
 using TaskManagerApp.Service.Impl;
@@ -93,6 +94,16 @@ namespace TaskManagerApp.Controllers
 
             await _taskService.DeleteTaskAsync(id,userId);
             return NoContent();
+        }
+
+        [HttpPost("filter")]
+        public async Task<IActionResult> GetFilteredTasks(TaskFilterDto filterDto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var userId = user?.Id;
+            if (userId == null) return Unauthorized();
+            var tasks = await _taskService.GetFilteredTasks(filterDto);
+            return Ok(tasks);
         }
     }
 }

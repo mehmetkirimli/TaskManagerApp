@@ -1,9 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using TaskManagerApp.DTO;
+using TaskManagerApp.DTO.Filter;
 using TaskManagerApp.Entity;
 using TaskManagerApp.Repository.Impl;
 using TaskManagerApp.Service.Impl;
+using TaskManagerApp.Utils;
 
 namespace TaskManagerApp.Service
 {
@@ -88,7 +92,24 @@ namespace TaskManagerApp.Service
             await _taskRepo.DeleteAsync(id);
         }
 
+        public async Task<List<TaskDataDto>> GetFilteredTasks(TaskFilterDto filterDto)
+        {
+            // Filtreleme ifadesini hazırlıyoruz
+            Expression<Func<TaskData, bool>> filterExpression = t => true;
 
+            if (!string.IsNullOrEmpty(filterDto.Title))
+            {
+                filterExpression = filterExpression.AndAlso(t => t.Title.Contains(filterDto.Title));
+            }
+
+            if (filterDto.isCompleted.HasValue)
+            {
+                filterExpression = filterExpression.AndAlso(t => t.IsCompleted == filterDto.isCompleted.Value);
+            }
+
+            var tasks = await _taskRepo.GetFilteredAsync(filterExpression);
+            return _mapper.Map<List<TaskDataDto>>(tasks);
+        }
 
     }
 }

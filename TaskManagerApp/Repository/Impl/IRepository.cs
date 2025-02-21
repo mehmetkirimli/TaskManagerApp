@@ -9,5 +9,6 @@ namespace TaskManagerApp.Repository.Impl
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+        Task<IEnumerable<T>> GetFilteredAsync(Expression<Func<T, bool>> filter);
     }
 }
